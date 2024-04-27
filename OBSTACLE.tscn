@@ -1,20 +1,20 @@
 [gd_scene load_steps=5 format=3 uid="uid://cucnh8qh6tglg"]
 
-[ext_resource type="Texture2D" uid="uid://d0rs224y473he" path="res://1st.png" id="1_q7c52"]
-[ext_resource type="Texture2D" uid="uid://b4m5628f7w3ah" path="res://2nd.png" id="2_vks1f"]
+[ext_resource type="Texture2D" uid="uid://bjpxmysh25nw1" path="res://1st.png" id="1_q7c52"]
+[ext_resource type="Texture2D" uid="uid://btjeqhquhm5ms" path="res://2nd.png" id="2_vks1f"]
 
 [sub_resource type="GDScript" id="GDScript_xaul4"]
 script/source = "extends Node3D
-var HasEntered = false
-var value1; var value2
-@export var forcevalue1 : int
-@export var forcevalue2 : int
+# This file generates the actual panels.
+var HasEntered = false # This makes it so only 1 of the panels can be touched.
+var value1; var value2 # Values we are going to generate or get by force.
+@export var forcevalue1 : int; @export var forcevalue2 : int # Variables that can be changed externally to force those values in the panels. This is used to guarantee, for example, that the first panels will ALWAYS have +50/+50.
 func _ready():
-	value1 = RandomNumberGenerator.new().randi_range(-50,50)
-	value2 = RandomNumberGenerator.new().randi_range(-50,50)
-	if forcevalue1 or forcevalue2:
-		value1 = forcevalue1
-		value2 = forcevalue2
+	value1 = RandomNumberGenerator.new().randi_range(-50,50) # First we generate values for the right and the left.
+	value2 = RandomNumberGenerator.new().randi_range(-50,50) # ^^^^^^^^^^^^^^^^^^^^
+	if forcevalue1 or forcevalue2:  # If we have any forced values...
+		value1 = forcevalue1 # We set them
+		value2 = forcevalue2 # And stop with the RNG stuff.
 		if value1 >= 0:
 			$Area3D/Sprite3D.texture = load(\"res://good.png\")
 		else:
@@ -22,52 +22,52 @@ func _ready():
 		if value2 >= 0:
 			$Area3D2/Sprite3D.texture = load(\"res://good.png\")
 		else:
-			$Area3D2/Sprite3D.texture= load(\"res://bad.png\")
+			$Area3D2/Sprite3D.texture= load(\"res://bad.png\") # This chunk choses the right color (Red or green) whenever it's more than -1 points or less than -1 points (0 points is positive in this case)
 	else:
-		$Area3D/Label3D.text = str(value1)
+		$Area3D/Label3D.text = str(value1) # We set the labels in front of the panels
 		$Area3D/Label3D2.text = str(value2)
-		if value1 >= 0:
+		if value1 >= 0: 
 			$Area3D/Sprite3D.texture = load(\"res://good.png\")
 		else:
 			$Area3D/Sprite3D.texture= load(\"res://bad.png\")
 		if value2 >= 0:
 			$Area3D2/Sprite3D.texture = load(\"res://good.png\")
 		else:
-			$Area3D2/Sprite3D.texture= load(\"res://bad.png\")
-		var RNG = RandomNumberGenerator.new().randi_range(1,10)
-		if  RNG == 3:
+			$Area3D2/Sprite3D.texture= load(\"res://bad.png\") # Same as before, this could be a independent function. and save us space.
+		var RNG = RandomNumberGenerator.new().randi_range(1,10) # Roll a dice between 1 and 10...
+		if  RNG == 3: # If it's 3, make the left panel a mistery, which can be anything from -100 to +100
 			$Area3D/Label3D.text = str(\"???\")
 			$Area3D/Sprite3D.texture= load(\"res://mistery.png\")
 			value1 = RandomNumberGenerator.new().randi_range(-100,100)
-		elif RNG == 4:
+		elif RNG == 4: # If it's 4 do the same, but for the right
 			$Area3D2/Sprite3D.texture = load(\"res://mistery.png\")
 			$Area3D/Label3D2.text = str(\"???\")
 			value2 = RandomNumberGenerator.new().randi_range(-100,100)
-		elif RNG == 8:
+		elif RNG == 8: # If it's 8, we add a multiplication panel, this can only spawn in the right... For now, will fix... Soon...
 			value2 = \"*2\"
 			$Area3D/Label3D2.text = str(\"*2\")
 			$Area3D2/Sprite3D.texture = load(\"res://multiplication.png\")
-		elif RNG == 10:
+		elif RNG == 10: # And if it's 10 we add a division panel on the left, for now.
 			value1 = \"/2\"
 			$Area3D/Label3D.text = str(\"/2\")
 			$Area3D/Sprite3D.texture= load(\"res://divison.png\")
 func _process(delta):
 	if $\"../CharacterBody3D\".level <= -1:
-		queue_free()
+		queue_free() # If the player is dead we don't need to exist.
 
-func _on_area_3d_body_entered(body):
-	if body.is_in_group(\"player\") and not HasEntered:
-		HasEntered = true
-		if value1 is String:
-			$\"../CharacterBody3D\".level -= $\"../CharacterBody3D\".level/2
+func _on_area_3d_body_entered(body): # LEFT PANEL LOGIC!!
+	if body.is_in_group(\"player\") and not HasEntered: 
+		HasEntered = true # Prevent the player from entering the area again OR going in the other area.
+		if value1 is String: # If the value is a string, must be a division
+			$\"../CharacterBody3D\".level -= $\"../CharacterBody3D\".level/2 # So we divide it by 2.
 		else:
-			$\"../CharacterBody3D\".level += value1
-		self.queue_free()
+			$\"../CharacterBody3D\".level += value1 # Or simply add the normal number if it's not
+		self.queue_free() # Delete after player touches.
 
-func _on_area_3d_2_body_entered(body):
+func _on_area_3d_2_body_entered(body): # RIGHT PANEL LOGIC!!
 	if body.is_in_group(\"player\") and not HasEntered:
 		HasEntered = true
-		if value2 is String:
+		if value2 is String: # The same, but it's a multiplication instead, again, this WILL change. Keep an eye on updates.
 			$\"../CharacterBody3D\".level *= 2
 		else:
 			$\"../CharacterBody3D\".level += value2
