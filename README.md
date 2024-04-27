@@ -17,12 +17,8 @@ What's missing:
 - The rest??
 - ???
 - :3
-<<<<<<< HEAD
 - Sound effects and stuff ig
 ~~- Phone (Touch) controls~~
-=======
-- Phone (Touch) controls
->>>>>>> 8db062796a92f9f51178a441f14323dfbdeb59d7
 
 What you can do with it:
 
@@ -36,7 +32,5 @@ What you can do with it:
 1. Clone the repo
 2. Open the project.godot file in Godot. (4.2)
 3. That's it... Enjoy and change as you wish.
-<<<<<<< HEAD
 
 =======
->>>>>>> 8db062796a92f9f51178a441f14323dfbdeb59d7
