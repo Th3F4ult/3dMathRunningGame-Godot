@@ -42,11 +42,12 @@ func _ready():
 				$Area3D2/Sprite3D.texture = load(\"res://mistery.png\")
 				$Area3D/Label3D2.text = str(\"???\")
 				value2 = RandomNumberGenerator.new().randi_range(-100,100)
-			8: # If it's 8, we add a multiplication panel, this can only spawn in the right... For now, will fix... Soon...
-				var rngside = RandomNumberGenerator.new().randi_range(1,2)
-				match rngside:
-					1: value2 = \"*2\"; $Area3D/Label3D2.text = str(\"*2\"); $Area3D2/Sprite3D.texture = load(\"res://multiplication.png\")
-					2: value1 = \"*2\"; $Area3D/Label3D.text = str(\"*2\"); $Area3D/Sprite3D.texture = load(\"res://multiplication.png\")
+			#8: # If it's 8, we add a multiplication panel, this can only spawn in the right... For now, will fix... Soon...
+				#var rngside = RandomNumberGenerator.new().randi_range(1,2)
+				#match rngside:
+					#1: value2 = \"*2\"; $Area3D/Label3D2.text = str(\"*2\"); $Area3D2/Sprite3D.texture = load(\"res://multiplication.png\")
+					#2: value1 = \"*2\"; $Area3D/Label3D.text = str(\"*2\"); $Area3D/Sprite3D.texture = load(\"res://multiplication.png\")
+#This was removed, it was too game breaking.
 			10: # And if it's 10 we add a division panel on the left, for now.
 				var rngside = RandomNumberGenerator.new().randi_range(1,2)
 				match rngside:
@@ -61,7 +62,7 @@ func _on_area_3d_body_entered(body): # RIGHT PANEL LOGIC!!
 	if body.is_in_group(\"player\") and not HasEntered: 
 		HasEntered = true # Prevent the player from entering the area again OR going in the other area.
 		match value1:
-			\"*2\": $\"../CharacterBody3D\".level *= 2
+			#\"*2\": $\"../CharacterBody3D\".level *= 2
 			\"/2\":$\"../CharacterBody3D\".level -= $\"../CharacterBody3D\".level/2
 			_: $\"../CharacterBody3D\".level += value1
 			 # We divide it by 2.
@@ -72,7 +73,7 @@ func _on_area_3d_2_body_entered(body): # LEFT PANEL LOGIC!!
 	if body.is_in_group(\"player\") and not HasEntered:
 		HasEntered = true
 		match value2:
-			\"*2\": $\"../CharacterBody3D\".level *= 2; print(\"Multiplied by two\")
+			#\"*2\": $\"../CharacterBody3D\".level *= 2; print(\"Multiplied by two\")
 			\"/2\":$\"../CharacterBody3D\".level -= $\"../CharacterBody3D\".level/2
 			_: $\"../CharacterBody3D\".level += value2
 		self.queue_free()

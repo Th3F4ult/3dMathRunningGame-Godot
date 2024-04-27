@@ -28,9 +28,9 @@ func _physics_process(delta):
 		#if Input.is_action_just_pressed(\"ui_accept\") and is_on_floor():
 			#velocity.y = JUMP_VELOCITY # We don't need any of that
 		var speedmultiplier = 0 # Multiplier for speed, it can go up to 30. That makes you move 4 times as fast as default.
-		if level <= 30000: # We cap it at 30k levels
-			speedmultiplier = level / 1000 # 30k levels = 30 speed, divide them by 10 
-		else: # IF THE LEVEL IS OVER 30k...
+		if level <= 1000: # We cap it at 1000 levels
+			speedmultiplier = level / 33 # 1000 levels = 30 speed, divide them by 10 
+		else: # IF THE LEVEL IS OVER 1000...
 			speedmultiplier = 30 # ... We manually set the speed to 30, the max. This is for a reason reason, after ~150k it bugs out.
 		velocity.z = -10 - speedmultiplier # Move forward.
 		move_and_slide() # Idk, this comes with CharacterBody2D and 3D lol
