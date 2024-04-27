@@ -18,7 +18,7 @@ What's missing:
 - ???
 - :3
 - Sound effects and stuff ig
-~~- Phone (Touch) controls~~
+- ~~Phone (Touch) controls~~
 
 What you can do with it:
 
