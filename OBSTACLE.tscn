@@ -1,0 +1,85 @@
+[gd_scene load_steps=5 format=3 uid="uid://cucnh8qh6tglg"]
+
+[ext_resource type="Texture2D" uid="uid://d0rs224y473he" path="res://1st.png" id="1_q7c52"]
+[ext_resource type="Texture2D" uid="uid://b4m5628f7w3ah" path="res://2nd.png" id="2_vks1f"]
+
+[sub_resource type="GDScript" id="GDScript_xaul4"]
+script/source = "extends Node3D
+var HasEntered = false
+var value1; var value2
+@export var forcevalue1 : int
+@export var forcevalue2 : int
+func _ready():
+	value1 = RandomNumberGenerator.new().randi_range(-50,50)
+	value2 = RandomNumberGenerator.new().randi_range(-50,50)
+	if forcevalue1:
+		value1 = forcevalue1
+	if forcevalue2:
+		value2 = forcevalue2
+	$Area3D/Label3D.text = str(value1)
+	$Area3D/Label3D2.text = str(value2)
+func _process(delta):
+	if $\"../CharacterBody3D\".level <= -1:
+		queue_free()
+
+func _on_area_3d_body_entered(body):
+	if body.is_in_group(\"player\") and not HasEntered:
+		print(\"Entered in first\")
+		HasEntered = true
+		$\"../CharacterBody3D\".level += value1
+		self.queue_free()
+	else:
+		print(\"Not counting this\")
+
+func _on_area_3d_2_body_entered(body):
+	if body.is_in_group(\"player\") and not HasEntered:
+		print(\"Entered in second\")
+		HasEntered = true
+		$\"../CharacterBody3D\".level += value2
+		self.queue_free()
+	else:
+		print(\"Not counting this\")
+"
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_kp3i6"]
+size = Vector3(2.5, 3, 0.1)
+
+[node name="Node3D" type="Node3D"]
+script = SubResource("GDScript_xaul4")
+
+[node name="Area3D" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.21, 1.5, 0)
+
+[node name="Sprite3D" type="Sprite3D" parent="Area3D"]
+transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, 0, 0, 0)
+texture = ExtResource("1_q7c52")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
+shape = SubResource("BoxShape3D_kp3i6")
+
+[node name="Label3D" type="Label3D" parent="Area3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.698821)
+modulate = Color(0, 0, 0, 1)
+outline_modulate = Color(1, 1, 1, 1)
+text = "+50"
+font_size = 128
+
+[node name="Label3D2" type="Label3D" parent="Area3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.12247, 0, 0.698821)
+modulate = Color(0, 0, 0, 1)
+outline_modulate = Color(1, 1, 1, 1)
+text = "-50"
+font_size = 128
+
+[node name="Area3D2" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.265, 1.5, 0)
+
+[node name="Sprite3D" type="Sprite3D" parent="Area3D2"]
+transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, 0, 0, 0)
+texture = ExtResource("2_vks1f")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D2"]
+shape = SubResource("BoxShape3D_kp3i6")
+
+[connection signal="body_entered" from="Area3D" to="." method="_on_area_3d_body_entered"]
+[connection signal="body_entered" from="Area3D2" to="." method="_on_area_3d_2_body_entered"]
