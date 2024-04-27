@@ -29,7 +29,7 @@ func _physics_process(delta):
 			#velocity.y = JUMP_VELOCITY # We don't need any of that
 		var speedmultiplier = 0 # Multiplier for speed, it can go up to 30. That makes you move 4 times as fast as default.
 		if level <= 1000: # We cap it at 1000 levels
-			speedmultiplier = level / 33 # 1000 levels = 30 speed, divide them by 10 
+			speedmultiplier = level / 33 # 1000 levels = 30 speed, divide them by roughly ~33
 		else: # IF THE LEVEL IS OVER 1000...
 			speedmultiplier = 30 # ... We manually set the speed to 30, the max. This is for a reason reason, after ~150k it bugs out.
 		velocity.z = -10 - speedmultiplier # Move forward.
