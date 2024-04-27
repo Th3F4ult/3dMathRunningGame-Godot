@@ -12,33 +12,66 @@ var value1; var value2
 func _ready():
 	value1 = RandomNumberGenerator.new().randi_range(-50,50)
 	value2 = RandomNumberGenerator.new().randi_range(-50,50)
-	if forcevalue1:
+	if forcevalue1 or forcevalue2:
 		value1 = forcevalue1
-	if forcevalue2:
 		value2 = forcevalue2
-	$Area3D/Label3D.text = str(value1)
-	$Area3D/Label3D2.text = str(value2)
+		if value1 >= 0:
+			$Area3D/Sprite3D.texture = load(\"res://good.png\")
+		else:
+			$Area3D/Sprite3D.texture= load(\"res://bad.png\")
+		if value2 >= 0:
+			$Area3D2/Sprite3D.texture = load(\"res://good.png\")
+		else:
+			$Area3D2/Sprite3D.texture= load(\"res://bad.png\")
+	else:
+		$Area3D/Label3D.text = str(value1)
+		$Area3D/Label3D2.text = str(value2)
+		if value1 >= 0:
+			$Area3D/Sprite3D.texture = load(\"res://good.png\")
+		else:
+			$Area3D/Sprite3D.texture= load(\"res://bad.png\")
+		if value2 >= 0:
+			$Area3D2/Sprite3D.texture = load(\"res://good.png\")
+		else:
+			$Area3D2/Sprite3D.texture= load(\"res://bad.png\")
+		var RNG = RandomNumberGenerator.new().randi_range(1,10)
+		if  RNG == 3:
+			$Area3D/Label3D.text = str(\"???\")
+			$Area3D/Sprite3D.texture= load(\"res://mistery.png\")
+			value1 = RandomNumberGenerator.new().randi_range(-100,100)
+		elif RNG == 4:
+			$Area3D2/Sprite3D.texture = load(\"res://mistery.png\")
+			$Area3D/Label3D2.text = str(\"???\")
+			value2 = RandomNumberGenerator.new().randi_range(-100,100)
+		elif RNG == 8:
+			value2 = \"*2\"
+			$Area3D/Label3D2.text = str(\"*2\")
+			$Area3D2/Sprite3D.texture = load(\"res://multiplication.png\")
+		elif RNG == 10:
+			value1 = \"/2\"
+			$Area3D/Label3D.text = str(\"/2\")
+			$Area3D/Sprite3D.texture= load(\"res://divison.png\")
 func _process(delta):
 	if $\"../CharacterBody3D\".level <= -1:
 		queue_free()
 
 func _on_area_3d_body_entered(body):
 	if body.is_in_group(\"player\") and not HasEntered:
-		print(\"Entered in first\")
 		HasEntered = true
-		$\"../CharacterBody3D\".level += value1
+		if value1 is String:
+			$\"../CharacterBody3D\".level -= $\"../CharacterBody3D\".level/2
+		else:
+			$\"../CharacterBody3D\".level += value1
 		self.queue_free()
-	else:
-		print(\"Not counting this\")
 
 func _on_area_3d_2_body_entered(body):
 	if body.is_in_group(\"player\") and not HasEntered:
-		print(\"Entered in second\")
 		HasEntered = true
-		$\"../CharacterBody3D\".level += value2
+		if value2 is String:
+			$\"../CharacterBody3D\".level *= 2
+		else:
+			$\"../CharacterBody3D\".level += value2
 		self.queue_free()
-	else:
-		print(\"Not counting this\")
 "
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_kp3i6"]
