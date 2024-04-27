@@ -11,12 +11,13 @@ size = Vector3(5, 0.1, 50)
 [sub_resource type="GDScript" id="GDScript_mwimw"]
 script/source = "extends CharacterBody3D
 # MAIN.tscn, this file contains the player and spawns the \"panels\"
-const SPEED = 10.0 # Feel free to change this if you wanna make it FAST or SLOW, higher = faster.
 @export var level = 0 # Level, points, score, call it what you want.
+#var SPEED = 10.0 # Feel free to change this if you wanna make it FAST or SLOW, higher = faster.
 @export var cancontrol = true # This variable is only here to save using a singleton
 #var gravity = ProjectSettings.get_setting(\"physics/3d/default_gravity\") # Commented because we do not need gravity.
 
 func _physics_process(delta):
+	print(velocity.z)
 	if cancontrol: # This means we are not dead.
 		if get_viewport().get_mouse_position().x <= 500: # If mouse (Touchscreen's finger too) on the right side of the screen...
 			velocity.x = -10 # ...Move to the right!...
@@ -27,11 +28,16 @@ func _physics_process(delta):
 			#velocity.y -= gravity * delta
 		#if Input.is_action_just_pressed(\"ui_accept\") and is_on_floor():
 			#velocity.y = JUMP_VELOCITY # We don't need any of that
-		velocity.z = -10 # Move forward.
+		var speedmultiplier = 0 # Multiplier for speed, it can go up to 30. That makes you move 4 times as fast as default.
+		if level <= 30000: # We cap it at 30k levels
+			speedmultiplier = level / 1000 # 30k levels = 30 speed, divide them by 10 
+		else: # IF THE LEVEL IS OVER 30k...
+			speedmultiplier = 30 # ... We manually set the speed to 30, the max. This is for a reason reason, after ~150k it bugs out.
+		velocity.z = -10 - speedmultiplier # Move forward.
 		move_and_slide() # Idk, this comes with CharacterBody2D and 3D lol
 	else:
 		velocity = Vector3i(0,0,0) # If we're dead... Stop!
-	$\"../StaticBody3D\".position.z = position.z
+	$\"../StaticBody3D\".position.z = position.z # This is dirty, very dirty, we have \"Walls\" to not fall over the borders, AND the platform itself. It moves.
 	$\"../StaticBody3D2\".position.z = position.z
 	if level <= -1 and cancontrol: # If we are playing, and our level reaches -1 or lower...
 		cancontrol = false # Die, then ...
