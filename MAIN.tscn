@@ -17,7 +17,6 @@ script/source = "extends CharacterBody3D
 #var gravity = ProjectSettings.get_setting(\"physics/3d/default_gravity\") # Commented because we do not need gravity.
 
 func _physics_process(delta):
-	print(velocity.z)
 	if cancontrol: # This means we are not dead.
 		if get_viewport().get_mouse_position().x <= 500: # If mouse (Touchscreen's finger too) on the right side of the screen...
 			velocity.x = -10 # ...Move to the right!...
