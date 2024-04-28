@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://1x65yh6si4u6"]
+[gd_scene load_steps=19 format=3 uid="uid://1x65yh6si4u6"]
 
 [ext_resource type="Texture2D" uid="uid://dmdx4xxt4015d" path="res://good.png" id="1_0phwb"]
 [ext_resource type="PackedScene" uid="uid://cucnh8qh6tglg" path="res://OBSTACLE.tscn" id="1_746xx"]
@@ -18,6 +18,20 @@ script/source = "extends CharacterBody3D
 #var gravity = ProjectSettings.get_setting(\"physics/3d/default_gravity\") # Commented because we do not need gravity.
 @export var hasgotmulti = false
 var gameover
+var CurrentLevel
+var totalpoints
+func _ready():
+	var save = FileAccess.file_exists(\"user://save\")
+	var save_total = FileAccess.file_exists(\"user://save_points\")
+	if save and save_total:
+		CurrentLevel = FileAccess.open(\"user://save\", FileAccess.READ).get_64()
+		totalpoints = FileAccess.open(\"user://save_points\", FileAccess.READ).get_64()
+		$\"../CanvasLayer/Label\".text = str(\"Level: \", FileAccess.open(\"user://save\", FileAccess.READ).get_64(), \"\\nLifetime points:\\n\", totalpoints)
+	else:
+		FileAccess.open(\"user://save\", FileAccess.WRITE).store_64(1)
+		FileAccess.open(\"user://save_points\", FileAccess.WRITE).store_64(0)
+		_ready()
+
 func _physics_process(delta):
 	if cancontrol: # This means we are not dead.
 		if get_viewport().get_mouse_position().x <= 500: # If mouse (Touchscreen's finger too) on the right side of the screen...
@@ -45,11 +59,13 @@ func _physics_process(delta):
 		$\"../AnimationPlayer\".play(\"Game_OVER\") # ... Do the little animation...
 		gameover = \"lost\"
 	elif level >= 999 and cancontrol:
-		cancontrol = false # Die, then ...
+		$\"../CanvasLayer\".visible = false
+		cancontrol = false # We won!
 		var POINTS = preload(\"res://End_Screen_Multiplier_canvas.tscn\").instantiate()
 		add_child(POINTS)
 		$\"../AnimationPlayer\".play(\"game_WIN\")
 		gameover = \"won\"
+		FileAccess.open(\"user://save\", FileAccess.WRITE).store_64(CurrentLevel+1)
 	match gameover:
 		\"lost\":
 			if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and not cancontrol:
@@ -57,7 +73,6 @@ func _physics_process(delta):
 		\"won\":
 			if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and not cancontrol and hasgotmulti:
 				get_tree().change_scene_to_file(\"res://MAIN.tscn\") # ... and wait until user input to respawn (Tap to restart)
-
 
 func _on_area_3d_2_body_exited(body): 
 	# This is the area that spawns more panels in front.
@@ -166,6 +181,9 @@ _data = {
 [sub_resource type="BoxShape3D" id="BoxShape3D_mbagj"]
 size = Vector3(0.783203, 1, 6.7627)
 
+[sub_resource type="LabelSettings" id="LabelSettings_asqkk"]
+font_size = 128
+
 [node name="Node3D" type="Node3D"]
 
 [node name="StaticBody3D" type="StaticBody3D" parent="."]
@@ -240,5 +258,15 @@ shape = SubResource("BoxShape3D_mbagj")
 [node name="CollisionShape3D2" type="CollisionShape3D" parent="StaticBody3D2"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.85358, 0, 2.88135)
 shape = SubResource("BoxShape3D_mbagj")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Label" type="Label" parent="CanvasLayer"]
+offset_right = 1080.0
+offset_bottom = 129.0
+text = "{level text}"
+label_settings = SubResource("LabelSettings_asqkk")
+horizontal_alignment = 1
+autowrap_mode = 1
 
 [connection signal="body_exited" from="Area3D2" to="CharacterBody3D" method="_on_area_3d_2_body_exited"]

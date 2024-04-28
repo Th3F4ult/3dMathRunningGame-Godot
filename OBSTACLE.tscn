@@ -17,6 +17,8 @@ func _ready():
 	if forcevalue1 or forcevalue2:  # If we have any forced values...
 		value1 = forcevalue1 # We set them
 		value2 = forcevalue2 # And stop with the RNG stuff.
+		$Area3D/Label3D.text = str(value1) # We set the labels.
+		$Area3D/Label3D2.text = str(value2)
 		if value1 >= 0:
 			$Area3D/Sprite3D.texture = load(\"res://good.png\")
 		else:

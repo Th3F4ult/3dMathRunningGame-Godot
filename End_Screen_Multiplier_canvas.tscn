@@ -34,9 +34,11 @@ func _ready():
 	if running:
 		_ready()
 	else: 
+		var previouspoints = FileAccess.open(\"user://save_points\", FileAccess.READ).get_64()
 		$\"..\".level *= mult 
 		$\"..\".hasgotmulti = true
 		$Label.text = str(\"Final score: \\n\", $\"..\".level, \"!!\")
+		FileAccess.open(\"user://save_points\", FileAccess.WRITE).store_64(previouspoints + ($\"..\".level * mult))
 "
 
 [sub_resource type="LabelSettings" id="LabelSettings_l4unu"]
