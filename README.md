@@ -9,6 +9,7 @@ What's done:
 - That's it???
 - :3
 - Touch controls! Touch the right side to move to the right, the left to... well, you can guess
+- Ending screen (Can easily be re-implemented with ads (Watch ad to get x reward))
 
 What's missing:
 
