@@ -13,7 +13,7 @@ What's done:
 
 What's missing:
 
-- Actual assets
+- ~~Actual assets~~ (I guess this can be count as done??)
 - A player model
 - The rest??
 - ???
