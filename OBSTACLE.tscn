@@ -42,12 +42,22 @@ func _ready():
 				$Area3D2/Sprite3D.texture = load(\"res://mistery.png\")
 				$Area3D/Label3D2.text = str(\"???\")
 				value2 = RandomNumberGenerator.new().randi_range(-100,100)
+			8: # If it's 8, it's always +150, lucky!
+				var rngside = RandomNumberGenerator.new().randi_range(1,2)
+				match rngside:
+					1: value2 = 150; $Area3D/Label3D2.text = str(\"150!!\"); $Area3D2/Sprite3D.texture = load(\"res://multiplication.png\")
+					2: value1 = 150; $Area3D/Label3D.text = str(\"150!!\"); $Area3D/Sprite3D.texture = load(\"res://multiplication.png\")
+			9: # If it's a 9, it's a 150 in the right and a /2 in the left.
+				value2 = 150; $Area3D/Label3D2.text = str(\"150!!\"); $Area3D2/Sprite3D.texture = load(\"res://multiplication.png\")
+				value1 = \"/2\"; $Area3D/Label3D.text = str(\"/2\"); $Area3D/Sprite3D.texture = load(\"res://divison.png\")
+
+#-------------------------- Start of the multiplication panel, removed because it was too broken. Made the game boring. Feel free to uncomment this and comment the other 8 value.
 			#8: # If it's 8, we add a multiplication panel, this can only spawn in the right... For now, will fix... Soon...
 				#var rngside = RandomNumberGenerator.new().randi_range(1,2)
 				#match rngside:
 					#1: value2 = \"*2\"; $Area3D/Label3D2.text = str(\"*2\"); $Area3D2/Sprite3D.texture = load(\"res://multiplication.png\")
 					#2: value1 = \"*2\"; $Area3D/Label3D.text = str(\"*2\"); $Area3D/Sprite3D.texture = load(\"res://multiplication.png\")
-#This was removed, it was too game breaking.
+#-------------------------- This was removed, it was too game breaking.
 			10: # And if it's 10 we add a division panel on the left, for now.
 				var rngside = RandomNumberGenerator.new().randi_range(1,2)
 				match rngside:
@@ -55,7 +65,7 @@ func _ready():
 					2: value1 = \"/2\"; $Area3D/Label3D.text = str(\"/2\"); $Area3D/Sprite3D.texture = load(\"res://divison.png\")
 
 func _process(delta):
-	if $\"../CharacterBody3D\".level <= -1:
+	if $\"../CharacterBody3D\".level <= -1 or $\"../CharacterBody3D\".level >= 999 :
 		queue_free() # If the player is dead we don't need to exist.
 
 func _on_area_3d_body_entered(body): # RIGHT PANEL LOGIC!!

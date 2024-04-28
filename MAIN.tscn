@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://1x65yh6si4u6"]
+[gd_scene load_steps=16 format=3 uid="uid://1x65yh6si4u6"]
 
 [ext_resource type="PackedScene" uid="uid://cucnh8qh6tglg" path="res://OBSTACLE.tscn" id="1_746xx"]
 
@@ -41,6 +41,9 @@ func _physics_process(delta):
 	if level <= -1 and cancontrol: # If we are playing, and our level reaches -1 or lower...
 		cancontrol = false # Die, then ...
 		$\"../AnimationPlayer\".play(\"Game_OVER\") # ... Do the little animation...
+	elif level >= 999 and cancontrol:
+		cancontrol = false # Die, then ...
+		$\"../AnimationPlayer\".play(\"game_WIN\")
 	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and not cancontrol:
 		get_tree().change_scene_to_file(\"res://MAIN.tscn\") # ... and wait until user input to respawn (Tap to restart)
 
@@ -108,9 +111,40 @@ tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = PackedFloat32Array(0, 1, 0, -1, 0, 0.9, 1, 0, 3, -3)
 
+[sub_resource type="Animation" id="Animation_jcnlj"]
+resource_name = "game_WIN"
+tracks/0/type = "position_3d"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CharacterBody3D/Label3D")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = PackedFloat32Array(0.1, 1, 0, 1.5, 0, 0.9, 1, 0, 1.5, 0.5)
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("CharacterBody3D/Label3D:text")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.9),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["You win!
+Congratulations!"]
+}
+tracks/2/type = "position_3d"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("CharacterBody3D/Label3D2")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = PackedFloat32Array(0, 1, 0, -1, 0, 0.9, 1, 0, 3, -3)
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_teqm2"]
 _data = {
-"Game_OVER": SubResource("Animation_flsyj")
+"Game_OVER": SubResource("Animation_flsyj"),
+"game_WIN": SubResource("Animation_jcnlj")
 }
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_mbagj"]
