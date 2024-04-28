@@ -1,0 +1,89 @@
+[gd_scene load_steps=5 format=3 uid="uid://ch33fopkpelkx"]
+
+[ext_resource type="Texture2D" uid="uid://bjwv5sfbtyvcj" path="res://BTN_State_Normal.png" id="1_57khr"]
+[ext_resource type="Texture2D" uid="uid://becjlbxw4u3h" path="res://BTN_State_Pressed.png" id="2_glqii"]
+
+[sub_resource type="GDScript" id="GDScript_dxhni"]
+script/source = "extends CanvasLayer
+
+var running = true
+var mult = 0
+func BUTTON_WIN_MULTIPLIER():
+	$TextureButton.disabled = true
+	running = false
+
+func _ready():
+	# Dirty workaround, but it works.
+	# It changes the \"Multiplier\" at the end of the game, as long as we don't press the button, if we do, it stops and applies the multiplier.
+	if running:
+		await get_tree().create_timer(0.1).timeout
+		$PointsMult.text = str(\"x1\")
+		mult = 1
+	if running:
+		await get_tree().create_timer(0.1).timeout
+		$PointsMult.text = str(\"x2\")
+		mult = 2
+	if running:
+		await get_tree().create_timer(0.1).timeout
+		$PointsMult.text = str(\"x5\")
+		mult = 5
+	if running:
+		await get_tree().create_timer(0.1).timeout
+		$PointsMult.text = str(\"x10\")
+		mult = 10
+	if running:
+		_ready()
+	else: 
+		$\"..\".level *= mult 
+		$\"..\".hasgotmulti = true
+		$Label.text = str(\"Final score: \\n\", $\"..\".level, \"!!\")
+"
+
+[sub_resource type="LabelSettings" id="LabelSettings_l4unu"]
+font_size = 128
+
+[node name="CanvasLayer" type="CanvasLayer"]
+script = SubResource("GDScript_dxhni")
+
+[node name="Label" type="Label" parent="."]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -541.0
+offset_right = 540.0
+offset_bottom = 353.0
+grow_horizontal = 2
+text = "Click for
+more points!"
+label_settings = SubResource("LabelSettings_l4unu")
+horizontal_alignment = 1
+
+[node name="TextureButton" type="TextureButton" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -112.0
+offset_top = -697.0
+offset_right = 16.0
+offset_bottom = -569.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(2, 2)
+size_flags_horizontal = 4
+texture_normal = ExtResource("1_57khr")
+texture_pressed = ExtResource("2_glqii")
+texture_disabled = ExtResource("2_glqii")
+
+[node name="PointsMult" type="Label" parent="."]
+offset_left = -1.0
+offset_top = 710.0
+offset_right = 1080.0
+offset_bottom = 1063.0
+text = "You won!
+Click the button!"
+label_settings = SubResource("LabelSettings_l4unu")
+horizontal_alignment = 1
+
+[connection signal="pressed" from="TextureButton" to="." method="BUTTON_WIN_MULTIPLIER"]

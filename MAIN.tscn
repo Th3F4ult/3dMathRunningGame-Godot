@@ -15,7 +15,8 @@ script/source = "extends CharacterBody3D
 #var SPEED = 10.0 # Feel free to change this if you wanna make it FAST or SLOW, higher = faster.
 @export var cancontrol = true # This variable is only here to save using a singleton
 #var gravity = ProjectSettings.get_setting(\"physics/3d/default_gravity\") # Commented because we do not need gravity.
-
+@export var hasgotmulti = false
+var gameover
 func _physics_process(delta):
 	if cancontrol: # This means we are not dead.
 		if get_viewport().get_mouse_position().x <= 500: # If mouse (Touchscreen's finger too) on the right side of the screen...
@@ -41,11 +42,20 @@ func _physics_process(delta):
 	if level <= -1 and cancontrol: # If we are playing, and our level reaches -1 or lower...
 		cancontrol = false # Die, then ...
 		$\"../AnimationPlayer\".play(\"Game_OVER\") # ... Do the little animation...
+		gameover = \"lost\"
 	elif level >= 999 and cancontrol:
 		cancontrol = false # Die, then ...
+		var POINTS = preload(\"res://End_Screen_Multiplier_canvas.tscn\").instantiate()
+		add_child(POINTS)
 		$\"../AnimationPlayer\".play(\"game_WIN\")
-	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and not cancontrol:
-		get_tree().change_scene_to_file(\"res://MAIN.tscn\") # ... and wait until user input to respawn (Tap to restart)
+		gameover = \"won\"
+	match gameover:
+		\"lost\":
+			if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and not cancontrol:
+				get_tree().change_scene_to_file(\"res://MAIN.tscn\") # ... and wait until user input to respawn (Tap to restart)
+		\"won\":
+			if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and not cancontrol and hasgotmulti:
+				get_tree().change_scene_to_file(\"res://MAIN.tscn\") # ... and wait until user input to respawn (Tap to restart)
 
 
 func _on_area_3d_2_body_exited(body): 
