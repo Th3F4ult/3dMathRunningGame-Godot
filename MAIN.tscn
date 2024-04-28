@@ -1,5 +1,6 @@
-[gd_scene load_steps=16 format=3 uid="uid://1x65yh6si4u6"]
+[gd_scene load_steps=18 format=3 uid="uid://1x65yh6si4u6"]
 
+[ext_resource type="Texture2D" uid="uid://dmdx4xxt4015d" path="res://good.png" id="1_0phwb"]
 [ext_resource type="PackedScene" uid="uid://cucnh8qh6tglg" path="res://OBSTACLE.tscn" id="1_746xx"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_csv4y"]
@@ -67,10 +68,13 @@ func _on_area_3d_2_body_exited(body):
 		$\"../Area3D2\".position.z -= 15 # We move ourselves 15 units to the front.
 		var instance = preload(\"res://OBSTACLE.tscn\").instantiate() # Create a new \"OBSTACLE.tscn\"
 		#instance.forcevalue1 = 10; instance.forcevalue2 = -10 # This right here makes it so the panels will ALWAYS have 10 and -10
-		instance.position.z = position.z -15 # Push the obstacle 15 units in front.
+		instance.position.z = position.z -15+(velocity.z/2) # Push the obstacle 15 plus our current velocity z divided by 2 units in front. At lowest this spawns 15+7 units in the front, at max it does 15+20 in the front.
 		get_tree().root.get_node(\"Node3D\").add_child(instance) # Finally add the obstacle to the path
 
 "
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_slfic"]
+albedo_texture = ExtResource("1_0phwb")
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_2tr4x"]
 
@@ -78,10 +82,12 @@ func _on_area_3d_2_body_exited(body):
 
 [sub_resource type="FontVariation" id="FontVariation_w3y12"]
 
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_ao067"]
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_jxtec"]
+sky_horizon_color = Color(0.454902, 0.666667, 0.941176, 1)
+sky_curve = 0.689218
 
 [sub_resource type="Sky" id="Sky_s765c"]
-sky_material = SubResource("ProceduralSkyMaterial_ao067")
+sky_material = SubResource("ProceduralSkyMaterial_jxtec")
 
 [sub_resource type="Environment" id="Environment_2vttv"]
 background_mode = 2
@@ -188,6 +194,7 @@ outline_size = 32
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 4)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="CharacterBody3D"]
+material_override = SubResource("StandardMaterial3D_slfic")
 mesh = SubResource("CylinderMesh_2tr4x")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="CharacterBody3D"]
