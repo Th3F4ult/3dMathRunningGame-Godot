@@ -1,7 +1,22 @@
 [gd_scene load_steps=19 format=3 uid="uid://1x65yh6si4u6"]
 
 [ext_resource type="Texture2D" uid="uid://dmdx4xxt4015d" path="res://good.png" id="1_0phwb"]
-[ext_resource type="PackedScene" uid="uid://cucnh8qh6tglg" path="res://OBSTACLE.tscn" id="1_746xx"]
+
+[sub_resource type="GDScript" id="GDScript_t8s6e"]
+script/source = "extends Node3D
+var level = FileAccess.file_exists(\"user://save\")
+var panels = preload(\"res://OBSTACLE.tscn\").instantiate()
+func _ready():
+	if level:
+		level = FileAccess.open(\"user://save\", FileAccess.READ).get_64()
+		panels.position.z = 11
+		panels.forcevalue1 = 50 + level
+		panels.forcevalue2 = 50 + level;
+		add_child(panels)
+	else:
+		FileAccess.open(\"user://save\", FileAccess.WRITE).store_64(1)
+		_ready()
+"
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_csv4y"]
 size = Vector3(5, 0.1, 50)
@@ -52,8 +67,8 @@ func _physics_process(delta):
 		move_and_slide() # Idk, this comes with CharacterBody2D and 3D lol
 	else:
 		velocity = Vector3i(0,0,0) # If we're dead... Stop!
-	$\"../StaticBody3D\".position.z = position.z # This is dirty, very dirty, we have \"Walls\" to not fall over the borders, AND the platform itself. It moves.
-	$\"../StaticBody3D2\".position.z = position.z
+	$\"../Ground\".position.z = position.z # This is dirty, very dirty, we have \"Walls\" to not fall over the borders, AND the platform itself. It moves.
+	$\"../Walls\".position.z = position.z
 	if level <= -1 and cancontrol: # If we are playing, and our level reaches -1 or lower...
 		cancontrol = false # Die, then ...
 		$\"../AnimationPlayer\".play(\"Game_OVER\") # ... Do the little animation...
@@ -80,7 +95,7 @@ func _on_area_3d_2_body_exited(body):
 	# The smaller (-20, -30, -40) the further away it will be.
 	# Also, you can uncomment the fourth line to add \"forced\" numbers to the panels.
 	if body.is_in_group(\"player\"): # We check if the body is actually the player
-		$\"../Area3D2\".position.z -= 15 # We move ourselves 15 units to the front.
+		$\"../SpawnBar\".position.z -= 15 # We move ourselves 15 units to the front.
 		var instance = preload(\"res://OBSTACLE.tscn\").instantiate() # Create a new \"OBSTACLE.tscn\"
 		#instance.forcevalue1 = 10; instance.forcevalue2 = -10 # This right here makes it so the panels will ALWAYS have 10 and -10
 		instance.position.z = position.z -15+(velocity.z/2) # Push the obstacle 15 plus our current velocity z divided by 2 units in front. At lowest this spawns 15+7 units in the front, at max it does 15+20 in the front.
@@ -185,14 +200,15 @@ size = Vector3(0.783203, 1, 6.7627)
 font_size = 128
 
 [node name="Node3D" type="Node3D"]
+script = SubResource("GDScript_t8s6e")
 
-[node name="StaticBody3D" type="StaticBody3D" parent="."]
+[node name="Ground" type="StaticBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.439573, 0)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+[node name="Grn_col" type="CollisionShape3D" parent="Ground"]
 shape = SubResource("BoxShape3D_csv4y")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D"]
+[node name="Grn_text" type="MeshInstance3D" parent="Ground"]
 mesh = SubResource("BoxMesh_lnqkj")
 skeleton = NodePath("../..")
 
@@ -231,10 +247,10 @@ outline_size = 32
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_2vttv")
 
-[node name="Area3D2" type="Area3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.13064, 9.98176)
+[node name="SpawnBar" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 13)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D2"]
+[node name="PlayerDetectShape3D" type="CollisionShape3D" parent="SpawnBar"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.274902, 0.0158691, 0)
 shape = SubResource("BoxShape3D_ayddq")
 
@@ -243,19 +259,14 @@ libraries = {
 "": SubResource("AnimationLibrary_teqm2")
 }
 
-[node name="Node3D" parent="." instance=ExtResource("1_746xx")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 11.4609)
-forcevalue1 = 50
-forcevalue2 = 50
-
-[node name="StaticBody3D2" type="StaticBody3D" parent="."]
+[node name="Walls" type="StaticBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, 20)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D2"]
+[node name="Wall_Right" type="CollisionShape3D" parent="Walls"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.108398, 0, 2.88135)
 shape = SubResource("BoxShape3D_mbagj")
 
-[node name="CollisionShape3D2" type="CollisionShape3D" parent="StaticBody3D2"]
+[node name="Wall_Left" type="CollisionShape3D" parent="Walls"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.85358, 0, 2.88135)
 shape = SubResource("BoxShape3D_mbagj")
 
@@ -269,4 +280,4 @@ label_settings = SubResource("LabelSettings_asqkk")
 horizontal_alignment = 1
 autowrap_mode = 1
 
-[connection signal="body_exited" from="Area3D2" to="CharacterBody3D" method="_on_area_3d_2_body_exited"]
+[connection signal="body_exited" from="SpawnBar" to="CharacterBody3D" method="_on_area_3d_2_body_exited"]
