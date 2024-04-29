@@ -4,18 +4,19 @@
 
 [sub_resource type="GDScript" id="GDScript_t8s6e"]
 script/source = "extends Node3D
-var level = FileAccess.file_exists(\"user://save\")
-var panels = preload(\"res://OBSTACLE.tscn\").instantiate()
+var level = FileAccess.file_exists(\"user://save\") # Temporal, checks if we have a level save file
+var panels = preload(\"res://OBSTACLE.tscn\").instantiate() # Load the panels into memory ???? idk
 func _ready():
-	if level:
-		level = FileAccess.open(\"user://save\", FileAccess.READ).get_64()
-		panels.position.z = 11
-		panels.forcevalue1 = 50 + level
-		panels.forcevalue2 = 50 + level;
-		add_child(panels)
-	else:
-		FileAccess.open(\"user://save\", FileAccess.WRITE).store_64(1)
-		_ready()
+	if level: # If we do...
+		level = FileAccess.open(\"user://save\", FileAccess.READ).get_64() # Replace that variable with the actual save data
+		panels.position.z = 11 # Set the position
+		panels.forcevalue1 = 50 + int(level) # Set the value (50 + the level we're currently in)
+		panels.forcevalue2 = 50 + int(level) # Again
+# PD: It should always be an int, but just in case it's stuck as a bool from previous check, convert it anyways.
+		add_child(panels) # Add it to the world
+	else: # If the file does not exist
+		FileAccess.open(\"user://save\", FileAccess.WRITE).store_64(1) # Create it, with level \"1\"
+		_ready() # Try again
 "
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_csv4y"]
@@ -74,6 +75,7 @@ func _physics_process(delta):
 		$\"../AnimationPlayer\".play(\"Game_OVER\") # ... Do the little animation...
 		gameover = \"lost\"
 	elif level >= 999 and cancontrol:
+		$Label3D2.visible = false
 		$\"../CanvasLayer\".visible = false
 		cancontrol = false # We won!
 		var POINTS = preload(\"res://End_Screen_Multiplier_canvas.tscn\").instantiate()
@@ -88,7 +90,8 @@ func _physics_process(delta):
 		\"won\":
 			if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and not cancontrol and hasgotmulti:
 				get_tree().change_scene_to_file(\"res://MAIN.tscn\") # ... and wait until user input to respawn (Tap to restart)
-
+	if hasgotmulti:
+		$Label3D2.visible = true
 func _on_area_3d_2_body_exited(body): 
 	# This is the area that spawns more panels in front.
 	# You possibly want to change the second -15 to spawn them closer/further away.
@@ -186,6 +189,19 @@ tracks/2/path = NodePath("CharacterBody3D/Label3D2")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = PackedFloat32Array(0, 1, 0, -1, 0, 0.9, 1, 0, 3, -3)
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("CharacterBody3D/Label3D2:text")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(-0.1),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["Tap anywhere
+Next level"]
+}
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_teqm2"]
 _data = {
@@ -217,7 +233,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 25)
 script = SubResource("GDScript_mwimw")
 
 [node name="Label3D2" type="Label3D" parent="CharacterBody3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -8.39598, 0)
 modulate = Color(0.831373, 0.0980392, 0.0980392, 1)
 text = "Tap anywhere
 to play again"
@@ -225,7 +241,7 @@ font_size = 128
 outline_size = 32
 
 [node name="Camera3D" type="Camera3D" parent="CharacterBody3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 8.03842)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="CharacterBody3D"]
 material_override = SubResource("StandardMaterial3D_slfic")
@@ -239,7 +255,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
 billboard = 1
 modulate = Color(0, 0, 0, 1)
 outline_modulate = Color(1, 1, 1, 1)
-text = "Game over :c"
+text = "John Balls JR the third"
 font = SubResource("FontVariation_w3y12")
 font_size = 64
 outline_size = 32
